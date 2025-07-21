@@ -1,6 +1,6 @@
 from multiprocessing import context
 from turtle import title
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from post.forms import NewPostForm
 from post.models import Tag, Stream, Follow, Post
 from django.contrib.auth.decorators import login_required
@@ -47,3 +47,10 @@ def NewPost(request):
     'form': form
   }
   return render(request, 'newpost.html', context)
+
+def PostDetail(request, post_id):
+  post = get_object_or_404(Post, id=post_id)
+  context = {
+    'post': post
+  }
+  return render(request, 'post-detail.html', context)
