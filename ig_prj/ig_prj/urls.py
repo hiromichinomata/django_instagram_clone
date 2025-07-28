@@ -23,6 +23,7 @@ from userauths.views import UserProfile, follow
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('message/', include('directs.urls')),
     path('post/', include('post.urls')),
     path('users/', include('userauths.urls')),
 

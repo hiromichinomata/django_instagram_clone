@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'comment',
+    'directs',
     'post',
     'crispy_forms',
     'userauths',
