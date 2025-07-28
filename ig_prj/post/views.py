@@ -3,6 +3,8 @@ from turtle import title
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from comment.forms import NewCommentForm
+from comment.models import Comment
 from post.forms import NewPostForm
 from post.models import Likes, Tag, Stream, Follow, Post
 from django.contrib.auth.decorators import login_required
@@ -53,11 +55,28 @@ def NewPost(request):
   return render(request, 'newpost.html', context)
 
 def PostDetail(request, post_id):
-  post = get_object_or_404(Post, id=post_id)
-  context = {
-    'post': post
-  }
-  return render(request, 'post-detail.html', context)
+    user = request.user
+    post = get_object_or_404(Post, id=post_id)
+    comments = Comment.objects.filter(post=post).order_by('-date')
+
+    if request.method == "POST":
+        form = NewCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = user
+            comment.save()
+            return HttpResponseRedirect(reverse('post-detail', args=[post.id]))
+    else:
+        form = NewCommentForm()
+
+    context = {
+        'post': post,
+        'form': form,
+        'comments': comments
+    }
+
+    return render(request, 'post-detail.html', context)
 
 def like(request, post_id):
     user = request.user
