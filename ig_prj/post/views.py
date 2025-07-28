@@ -1,8 +1,10 @@
 from multiprocessing import context
 from turtle import title
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from post.forms import NewPostForm
-from post.models import Tag, Stream, Follow, Post
+from post.models import Likes, Tag, Stream, Follow, Post
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -54,3 +56,21 @@ def PostDetail(request, post_id):
     'post': post
   }
   return render(request, 'post-detail.html', context)
+
+def like(request, post_id):
+    user = request.user
+    post = Post.objects.get(id=post_id)
+    current_likes = post.likes
+    liked = Likes.objects.filter(user=user, post=post).count()
+
+    if not liked:
+        Likes.objects.create(user=user, post=post)
+        current_likes = current_likes + 1
+    else:
+        Likes.objects.filter(user=user, post=post).delete()
+        current_likes = current_likes - 1
+        
+    post.likes = current_likes
+    post.save()
+
+    return HttpResponseRedirect(reverse('post-detail', args=[post_id]))
