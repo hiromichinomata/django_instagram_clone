@@ -7,6 +7,8 @@ from post.forms import NewPostForm
 from post.models import Likes, Tag, Stream, Follow, Post
 from django.contrib.auth.decorators import login_required
 
+from userauths.models import Profile
+
 # Create your views here.
 
 def index(request):
@@ -73,4 +75,15 @@ def like(request, post_id):
     post.likes = current_likes
     post.save()
 
+    return HttpResponseRedirect(reverse('post-detail', args=[post_id]))
+
+def favourite(request, post_id):
+    user = request.user
+    post = Post.objects.get(id=post_id)
+    profile = Profile.objects.get(user=user)
+
+    if profile.favourite.filter(id=post_id).exists():
+        profile.favourite.remove(post)
+    else:
+        profile.favourite.add(post)
     return HttpResponseRedirect(reverse('post-detail', args=[post_id]))
