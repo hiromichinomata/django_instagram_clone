@@ -13,6 +13,7 @@ from userauths.models import Profile
 
 # Create your views here.
 
+@login_required
 def index(request):
   user = request.user
   posts = Stream.objects.filter(user=user)
@@ -28,6 +29,7 @@ def index(request):
 
   return render(request, 'index.html', context)
 
+@login_required
 def NewPost(request):
   user = request.user
   tags_objs = []
@@ -66,6 +68,7 @@ def Tags(request, tag_slug):
     }
     return render(request, 'tag.html', context)
 
+@login_required
 def PostDetail(request, post_id):
     user = request.user
     post = get_object_or_404(Post, id=post_id)
@@ -90,6 +93,7 @@ def PostDetail(request, post_id):
 
     return render(request, 'post-detail.html', context)
 
+@login_required
 def like(request, post_id):
     user = request.user
     post = Post.objects.get(id=post_id)
@@ -108,6 +112,7 @@ def like(request, post_id):
 
     return HttpResponseRedirect(reverse('post-detail', args=[post_id]))
 
+@login_required
 def favourite(request, post_id):
     user = request.user
     post = Post.objects.get(id=post_id)
