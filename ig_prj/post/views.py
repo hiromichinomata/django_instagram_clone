@@ -54,6 +54,18 @@ def NewPost(request):
   }
   return render(request, 'newpost.html', context)
 
+@login_required
+def Tags(request, tag_slug):
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tag=tag).order_by('-posted')
+
+    context = {
+        'posts': posts,
+        'tag': tag
+
+    }
+    return render(request, 'tag.html', context)
+
 def PostDetail(request, post_id):
     user = request.user
     post = get_object_or_404(Post, id=post_id)
