@@ -38,7 +38,7 @@ class Post(models.Model):
     likes = models.IntegerField(default=0)
 
     def get_absolute_url(self):
-        return reverse("post-details", args=[str(self.id)])
+        return reverse("post-detail", args=[str(self.id)])
 
     def __str__(self):
         return self.caption
