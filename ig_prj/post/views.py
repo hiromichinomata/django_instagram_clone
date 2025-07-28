@@ -11,23 +11,33 @@ from django.contrib.auth.decorators import login_required
 
 from userauths.models import Profile
 
-# Create your views here.
+from django.contrib.auth.models import User
 
 @login_required
 def index(request):
-  user = request.user
-  posts = Stream.objects.filter(user=user)
+    user = request.user
+    user = request.user
+    all_users = User.objects.all()
+    follow_status = Follow.objects.filter(following=user, follower=request.user).exists()
 
-  group_ids = []
-  for post in posts:
-    group_ids.append(post.post_id)
+    profile = Profile.objects.all()
 
-  post_items = Post.objects.filter(id__in=group_ids).all().order_by('-posted')
-  context = {
-    'post_items': post_items
-  }
+    posts = Stream.objects.filter(user=user)
+    group_ids = []
 
-  return render(request, 'index.html', context)
+    
+    for post in posts:
+        group_ids.append(post.post_id)
+        
+    post_items = Post.objects.filter(id__in=group_ids).all().order_by('-posted')
+
+    context = {
+        'post_items': post_items,
+        'follow_status': follow_status,
+        'profile': profile,
+        'all_users': all_users,
+    }
+    return render(request, 'index.html', context)
 
 @login_required
 def NewPost(request):
